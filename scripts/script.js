@@ -102,7 +102,7 @@ window.addEventListener('DOMContentLoaded', () => {
             elem.addEventListener('click', () => {
                 setTimeout(() => {
                     animationShow();
-                }, 500);
+                }, 200);
                 popup.style.display = 'block';
             });
         });
