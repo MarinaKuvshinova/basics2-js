@@ -72,4 +72,40 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     };
     animation();
+
+    const inputText = () => {
+        const textContainer = document.querySelector('.text'),
+            input = textContainer.querySelector('input'),
+            textBox = textContainer.querySelector('p'),
+            getText = () => {
+                textBox.textContent = input.value;
+            },
+            debounce = (callback, delay) => {
+                let timeoutHandler = null;
+                return function() {
+                    clearTimeout(timeoutHandler);
+                    timeoutHandler = setTimeout(() => {
+                        callback();
+                    }, delay);
+                };
+            },
+            throttle = (callback, delay) => {
+                let timeoutHandler = null;
+                return function() {
+                    if (timeoutHandler === null) {
+                        timeoutHandler = setTimeout(() => {
+                            callback();
+                            timeoutHandler = null;
+                        }, delay);
+                    }
+                };
+            };
+        ///выводим текст кусками через каждые 300
+        input.addEventListener('input', throttle(getText, 300));
+        
+        //ждем когда текст перестанут вводить и вставляем куском
+        // input.addEventListener('input', debounce(getText, 300));
+    };
+    inputText();
+
 });
