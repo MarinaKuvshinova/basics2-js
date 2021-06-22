@@ -1,6 +1,5 @@
 window.addEventListener('DOMContentLoaded', () => {
     'use strict';
-
     //Timer
     const countTimer = deadline => {
         const timerHours = document.querySelector('#timer-hours'),
@@ -141,11 +140,9 @@ window.addEventListener('DOMContentLoaded', () => {
         };
 
         navItem.forEach(elem => {
-            elem.addEventListener('click', scrolling(elem));
+            elem.addEventListener('click', () => scrolling(elem));
         });
-        buttonScroll.addEventListener('click', e => {
-            scrolling(e.currentTarget);
-        });
+        buttonScroll.addEventListener('click', e => scrolling(e.currentTarget));
     };
     scrollToSection();
 });
