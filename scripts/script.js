@@ -72,28 +72,28 @@ window.addEventListener('DOMContentLoaded', () => {
             popupBtn = document.querySelectorAll('.popup-btn'),
             popupClose = popup.querySelector('.popup-close'),
             popupContent = popup.querySelector('.popup-content');
-        const animationShow = () => {
-            let left = 50;
-            setInterval(() => {
-                if (left <= 0) {
-                    clearInterval(animationShow);
-                } else {
-                    left--;
-                    popupContent.style.margin = `0 0 0 -${left}vw`;
-                }
-            }, 10);
+
+        let animationInterval;
+        const animationShow = (left = 50) => {
+            left--;
+            popupContent.style.margin = `0 0 0 -${left}vw`;
+            clearInterval(animationInterval);
+            animationInterval = setInterval(() => animationShow(left), 10);
+
+            if (left <= 0) {
+                clearInterval(animationInterval);
+            }
         };
 
-        const animationHide = () => {
-            let left = 0;
-            setInterval(() => {
-                if (left >= 80) {
-                    clearInterval(animationHide);
-                } else {
-                    left++;
-                    popupContent.style.margin = `0 0 0 -${left}vw`;
-                }
-            }, 10);
+        const animationHide = (left = 0) => {
+            left++;
+            popupContent.style.margin = `0 0 0 -${left}vw`;
+            clearInterval(animationInterval);
+            animationInterval = setInterval(() => animationHide(left), 10);
+
+            if (left >= 80) {
+                clearInterval(animationInterval);
+            }
         };
 
         popupBtn.forEach(elem => {
