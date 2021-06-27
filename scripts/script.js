@@ -351,37 +351,37 @@ window.addEventListener('DOMContentLoaded', () => {
     photoHover();
 
     //валидация
-    const validate = () => {    
+    const validate = () => {
         const calcForm = document.querySelector('.calc-block'),
             contactForm = document.querySelector('.footer-form');
 
         const checkText = (elem, type) => {
             elem.forEach(input => {
                 input.addEventListener('input', e => {
-                    switch(type) {
-                        case 'number': 
-                            e.target.value = e.target.value.replace(/\D/g, '');
-                            break;
-                        case 'text':
-                            e.target.value = e.target.value.replace(/[^а-яё -]/uig, '');
-                            break;
-                        case 'email':
-                            e.target.value = e.target.value.replace(/[^a-z@-_.!~'*]+/ig, '').replace(/[,\/#$%\^&;:{}=\`()\[\]]/g,'');
-                            break;
-                        case 'phone':
-                            e.target.value = e.target.value.replace(/[^\d()-]/ig, '');
-                            break;
+                    switch (type) {
+                    case 'number':
+                        e.target.value = e.target.value.replace(/\D/g, '');
+                        break;
+                    case 'text':
+                        e.target.value = e.target.value.replace(/[^а-яё -]/uig, '');
+                        break;
+                    case 'email':
+                        e.target.value = e.target.value.replace(/[^a-z@-_.!~'*]+/ig, '')
+                            .replace(/[,/#$%^&;:{}=`()[\]]/g, '');
+                        break;
+                    case 'phone':
+                        e.target.value = e.target.value.replace(/[^\d()-]/ig, '');
+                        break;
                     }
                 });
                 input.addEventListener('blur', e => {
                     let value = e.target.value;
-                    
-                    value = value.replace(/([- ])[- ]*(?:[- ]*[- ]+)?/g,'$1');
-                    value = value.replace(/(^[- ]*|[- ]*$)/g,'');
+                    value = value.replace(/([- ])[- ]*(?:[- ]*[- ]+)?/g, '$1');
+                    value = value.replace(/(^[- ]*|[- ]*$)/g, '');
 
                     if (e.target.getAttribute('name') === 'user_name') {
-                        value = value.toLowerCase().replace(/(\S)+/gui, 
-                            (match) => match[0].toUpperCase() + match.slice(1));
+                        value = value.toLowerCase().replace(/(\S)+/gui,
+                            match => match[0].toUpperCase() + match.slice(1));
                     }
 
                     e.target.value = value;
@@ -405,4 +405,59 @@ window.addEventListener('DOMContentLoaded', () => {
 
     };
     validate();
+
+    //калькулятор
+    const calc = (price = 100) => {
+        const calcBlock = document.querySelector('.calc-block'),
+            calcType = document.querySelector('.calc-type'),
+            calcSquare = document.querySelector('.calc-square'),
+            calcDay = document.querySelector('.calc-day'),
+            calcCount = document.querySelector('.calc-count'),
+            totalValue = document.getElementById('total');
+
+        const countSum = () => {
+            let total = 0,
+                countValue = 1,
+                dayValue = 1,
+                countToTal = 0,
+                interval = null;
+
+            const typeValue = calcType.options[calcType.selectedIndex].value,
+                squareValue = +calcSquare.value;
+
+            if (calcCount.value > 1) {
+                countValue += (calcCount.value - 1) / 10;
+            }
+
+            if (calcDay.value && calcDay.value < 5) {
+                dayValue *= 2;
+            } else if (calcDay.value && calcDay.value < 10) {
+                dayValue *= 1.5;
+            }
+
+            if (typeValue && squareValue) {
+                total = price * typeValue * squareValue * countValue * dayValue;
+            }
+
+            const counted = () => {
+                if (countToTal === total) {
+                    clearInterval(interval);
+                } else {
+                    countToTal += 100;
+                    totalValue.textContent = countToTal;
+                }
+            };
+            interval = setInterval(counted, 100);
+        };
+
+        calcBlock.addEventListener('change', event => {
+            const target = event.target;
+
+            if (target.matches('select') || target.matches('input')) {
+                countSum();
+            }
+
+        });
+    };
+    calc(100);
 });
