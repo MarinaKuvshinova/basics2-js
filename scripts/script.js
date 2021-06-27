@@ -96,22 +96,22 @@ window.addEventListener('DOMContentLoaded', () => {
         const animationShow = (left = 50) => {
             left--;
             popupContent.style.margin = `0 0 0 -${left}vw`;
-            clearInterval(animationInterval);
-            animationInterval = setInterval(() => animationShow(left), 10);
+            cancelAnimationFrame(animationInterval);
+            animationInterval = requestAnimationFrame(() => animationShow(left));
 
             if (left <= 0) {
-                clearInterval(animationInterval);
+                cancelAnimationFrame(animationInterval);
             }
         };
 
         const animationHide = (left = 0) => {
             left++;
             popupContent.style.margin = `0 0 0 -${left}vw`;
-            clearInterval(animationInterval);
-            animationInterval = setInterval(() => animationHide(left), 10);
+            cancelAnimationFrame(animationInterval);
+            animationInterval = requestAnimationFrame(() => animationHide(left));
 
             if (left >= 80) {
-                clearInterval(animationInterval);
+                cancelAnimationFrame(animationInterval);
             }
         };
 
@@ -351,7 +351,7 @@ window.addEventListener('DOMContentLoaded', () => {
     photoHover();
 
     //валидация
-    const validate = () => {
+    const validate = () => {    
         const calcForm = document.querySelector('.calc-block'),
             contactForm = document.querySelector('.footer-form');
 
@@ -366,7 +366,7 @@ window.addEventListener('DOMContentLoaded', () => {
                             e.target.value = e.target.value.replace(/[^а-яё -]/uig, '');
                             break;
                         case 'email':
-                            e.target.value = e.target.value.replace(/[^a-z@-_.!~'*]/ig, '');
+                            e.target.value = e.target.value.replace(/[^a-z@-_.!~'*]+/ig, '').replace(/[,\/#$%\^&;:{}=\`()\[\]]/g,'');
                             break;
                         case 'phone':
                             e.target.value = e.target.value.replace(/[^\d()-]/ig, '');
@@ -380,8 +380,8 @@ window.addEventListener('DOMContentLoaded', () => {
                     value = value.replace(/(^[- ]*|[- ]*$)/g,'');
 
                     if (e.target.getAttribute('name') === 'user_name') {
-                        value = value.toLowerCase().replace(/^[а-яё]/iu, 
-                            (match) => match.toUpperCase());
+                        value = value.toLowerCase().replace(/(\S)+/gui, 
+                            (match) => match[0].toUpperCase() + match.slice(1));
                     }
 
                     e.target.value = value;
@@ -392,17 +392,17 @@ window.addEventListener('DOMContentLoaded', () => {
         //check input in calc form
         checkText(calcForm.querySelectorAll('input[type="text"]'), 'number');
 
-        //check input text contact form
-        checkText(contactForm.querySelectorAll('#form2-name'), 'text');
         //check textarea contact form
         checkText(contactForm.querySelectorAll('#form2-message'), 'text');
-        //check input email contact form
-        checkText(contactForm.querySelectorAll('#form2-email'), 'email');
-        //check input phone contact form
-        checkText(contactForm.querySelectorAll('#form2-phone'), 'phone');
+
+        //check input text name from
+        checkText(document.getElementsByName('user_name'), 'text');
+        //check input text email from
+        checkText(document.getElementsByName('user_email'), 'email');
+        //check input text phone from
+        checkText(document.getElementsByName('user_phone'), 'phone');
 
 
     };
-    validate(); 
-
+    validate();
 });
