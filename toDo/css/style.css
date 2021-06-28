@@ -137,6 +137,7 @@ body {
     margin: 0 0 10px 0;
     padding: 14px 100px 14px 14px;
     word-break: break-word;
+    transition: all ease 1.5s;
 }
 
 .todo-item:last-of-type {
@@ -188,6 +189,10 @@ body {
 
 .todo-edit {
     background-image: url("../img/pencil.png");
+}
+
+.todo-edit.save {
+    background-color: green;
 }
 
 .todo-completed .todo-complete {
