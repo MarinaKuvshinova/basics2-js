@@ -366,7 +366,7 @@ window.addEventListener('DOMContentLoaded', () => {
                             e.target.value = e.target.value.replace(/[^а-яё -]/uig, '');
                             break;
                         case 'email':
-                            e.target.value = e.target.value.replace(/[^a-z@-_.!~'*]+/ig, '').replace(/[,\/#$%\^&;:{}=\`()\[\]]/g,'');
+                            e.target.value = e.target.value.replace(/[^a-z@\-_.!\~\'*]+/ig, '').replace(/[,\/#$%\^&;:{}=\`()\[\]]/g,'');
                             break;
                         case 'phone':
                             e.target.value = e.target.value.replace(/[^\d()-]/ig, '');
