@@ -91,10 +91,10 @@ window.addEventListener('DOMContentLoaded', () => {
             popupBtn = document.querySelectorAll('.popup-btn'),
             popupContent = popup.querySelector('.popup-content');
 
-        let animationInterval;
 
         const animationShow = (left = 50) => {
             left--;
+            let animationInterval;
             popupContent.style.margin = `0 0 0 -${left}vw`;
             cancelAnimationFrame(animationInterval);
             animationInterval = requestAnimationFrame(() => animationShow(left));
@@ -106,7 +106,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
         const animationHide = (left = 0) => {
             left++;
-            popupContent.style.margin = `0 0 0 -${left}vw`;
+            let animationInterval;
+                popupContent.style.margin = `0 0 0 -${left}vw`;
             cancelAnimationFrame(animationInterval);
             animationInterval = requestAnimationFrame(() => animationHide(left));
 
@@ -120,7 +121,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 animationHide();
                 setTimeout(() => {
                     popup.style.display = 'none';
-                }, 1000);
+                }, 200);
             } else {
                 popup.style.display = 'none';
             }
@@ -371,7 +372,7 @@ window.addEventListener('DOMContentLoaded', () => {
                             .replace(/[,\/#$%\^&;:{}=\`()\[\]]/g, '');
                         break;
                     case 'phone':
-                        e.target.value = e.target.value.replace(/[^\d()-]/ig, '');
+                        e.target.value = e.target.value.replace(/[^\d()-+]/ig, '');
                         break;
                     }
                 });
@@ -461,4 +462,264 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     };
     calc(100);
+
+    //валидация
+    class Validator {
+        constructor({ selector, pattern = {}, method }) {
+            this.form = document.querySelector(selector);
+            this.pattern = pattern;
+            this.method = method;
+            this.elementsForm = [...this.form.elements].filter(item =>
+                item.tagName.toLowerCase() !== 'button' && item.type !== 'button'
+            );
+            this.error = new Set();
+        }
+
+        init(callback) {
+            this.applyStyle();
+            this.setPattern();
+            this.elementsForm.forEach(elem => elem.addEventListener('change', this.checkIt.bind(this)));
+            this.form.addEventListener('submit', e => {
+                this.elementsForm.forEach(elem => this.checkIt({ target: elem }));
+
+                if (this.error.size) {
+                    e.preventDefault();
+                } else {
+                    e.preventDefault();
+                    callback(this.form.id);
+                }
+            });
+        }
+
+        isValid(elem) {
+            const validatorMethod = {
+                notEmpty(elem) {
+                    if (elem.value.trim() === '') {
+                        return false;
+                    }
+                    return true;
+                },
+                pattern(elem, pattern) {
+                    return  pattern.test(elem.value);
+                }
+            };
+
+            if (this.method) {
+                const method = this.method[elem.id];
+
+                if (method) {
+                    return method.every(item => validatorMethod[item[0]](elem, this.pattern[item[1]]));
+                }
+            } else {
+                console.warn('Необходимо передать idполей ввода и методы проверки этих полей');
+            }
+
+            return true;
+        }
+
+        checkIt(event) {
+            const target = event.target;
+
+            if (this.isValid(target)) {
+                this.showSuccess(target);
+                this.error.delete(target);
+            } else {
+                this.showError(target);
+                this.error.add(target);
+            }
+        }
+
+        showError(elem) {
+            elem.classList.remove('success');
+            elem.classList.add('error');
+
+            if (elem.nextElementSibling && elem.nextElementSibling.classList.contains('validator-error')) {
+                return;
+            }
+
+            const errorDiv = document.createElement('div');
+            errorDiv.textContent = 'Ошибка в этом поле';
+            errorDiv.classList.add('validator-error');
+            elem.insertAdjacentElement('afterend', errorDiv);
+        }
+
+        showSuccess(elem) {
+            elem.classList.remove('error');
+            elem.classList.add('success');
+            if (elem.nextElementSibling && elem.nextElementSibling.classList.contains('validator-error')) {
+                elem.nextElementSibling.remove();
+            }
+        }
+
+        applyStyle() {
+            const style = document.createElement('style');
+            style.textContent = `
+                input.success {
+                    border: 2px solid green
+                }
+                input.error {
+                    border: 2px solid red;
+                }
+                .validator-error {
+                    font-size: 10px;
+                    color: red;
+                    margin: -15px 0 0;
+                }`;
+            document.head.appendChild(style);
+        }
+
+        setPattern() {
+            if (!this.pattern.phone) {
+                this.pattern.phone = /^\+?[78]([-()]*\d){10}$/;
+            }
+
+            if (!this.pattern.email) {
+                this.pattern.email = /^\w+@\w+\.\w{2,}$/;
+            }
+        }
+    }
+
+    const valid1 = new Validator({
+        selector: '#form1',
+        pattern: {
+            'name': /[а-яё ]/uig,
+            'phone': /[\+?0-9]{7,10}/
+        },
+        method: {
+            'form1-phone': [
+                ['notEmpty'],
+                ['pattern', 'phone']
+            ],
+            'form1-email': [
+                ['notEmpty'],
+                ['pattern', 'email']
+            ],
+            'form1-name': [
+                ['notEmpty'],
+                ['pattern', 'name']
+            ]
+        }
+    });
+
+    const valid2 = new Validator({
+        selector: '#form2',
+        pattern: {
+            'name': /[а-яё ]/uig,
+            'phone': /[\+?0-9]{7,10}/,
+            'message': /[а-яё 0-9.,:;!?-]/uig
+        },
+        method: {
+            'form2-phone': [
+                ['notEmpty'],
+                ['pattern', 'phone']
+            ],
+            'form2-email': [
+                ['notEmpty'],
+                ['pattern', 'email']
+            ],
+            'form2-name': [
+                ['notEmpty'],
+                ['pattern', 'name']
+            ],
+            'form2-message': [
+                ['pattern', 'message']
+            ]
+        }
+    });
+    // valid2.init();
+
+    const valid3 = new Validator({
+        selector: '#form3',
+        pattern: {
+            'name': /[а-яё ]/uig,
+            'phone': /[\+?0-9]{7,10}/
+        },
+        method: {
+            'form3-phone': [
+                ['notEmpty'],
+                ['pattern', 'phone']
+            ],
+            'form3-email': [
+                ['notEmpty'],
+                ['pattern', 'email']
+            ],
+            'form3-name': [
+                ['notEmpty'],
+                ['pattern', 'name']
+            ]
+        }
+    });
+    // valid3.init();
+
+    //send ajax-form
+    const sendForm = formId => {
+        const errorMessage = 'Что то пошло не так...',
+            loadMessage = 'Загрузка...',
+            successMessage = 'Спасибо! Мы свами свяжемся!',
+            form = document.getElementById(formId),
+            statusMessage = document.createElement('div'),
+            loader = document.createElement('div');
+
+        const postData = (body, outputData, errorData) => {
+            const request = new XMLHttpRequest();
+
+            request.addEventListener('readystatechange', () => {
+                if (request.readyState !== 4) {
+                    return;
+                }
+
+                if (request.status === 200) {
+                    outputData();
+                } else {
+                    errorData(request.status);
+                }
+            });
+            request.open('POST', './server.php');
+            request.setRequestHeader('Content-Type', 'application/json'); //'multipart/form-data'
+
+            request.send(JSON.stringify(body));
+        };
+
+        statusMessage.className = 'loaded';
+        loader.className = 'sk-rotating-plane';
+
+        // form.addEventListener('submit', event => {
+        // event.preventDefault();
+        form.appendChild(loader);
+        form.appendChild(statusMessage);
+        statusMessage.textContent = loadMessage;
+
+        const formData = new FormData(form),
+            body = {};
+
+        // for (let val of formData.entries()) {
+        //     body[val[0]] = val[1];
+        // }
+        formData.forEach((value, key) => {
+            body[key] = value;
+        });
+        postData(body, () => {
+            statusMessage.textContent = successMessage;
+            loader.remove();
+            form.reset();
+            setTimeout(() => {
+                statusMessage.remove();
+            }, 2000);
+        }, error => {
+            statusMessage.textContent = errorMessage;
+            loader.remove();
+            console.error(error);
+            setTimeout(() => {
+                statusMessage.remove();
+            }, 2000);
+        });
+        // });
+    };
+
+    valid1.init(sendForm);
+    valid2.init(sendForm);
+    valid3.init(sendForm);
+    // sendForm('form1');
+    // sendForm('form2');
+    // sendForm('form3');
 });
