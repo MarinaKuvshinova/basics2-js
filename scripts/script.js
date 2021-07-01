@@ -108,7 +108,7 @@ window.addEventListener('DOMContentLoaded', () => {
             left++;
             let animationInterval;
                 popupContent.style.margin = `0 0 0 -${left}vw`;
-            cancelAnimationFrame(animationInterval);
+            // cancelAnimationFrame(animationInterval); 
             animationInterval = requestAnimationFrame(() => animationHide(left));
 
             if (left >= 80) {
@@ -121,7 +121,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 animationHide();
                 setTimeout(() => {
                     popup.style.display = 'none';
-                }, 200);
+                }, 1000);
             } else {
                 popup.style.display = 'none';
             }
@@ -660,24 +660,26 @@ window.addEventListener('DOMContentLoaded', () => {
             statusMessage = document.createElement('div'),
             loader = document.createElement('div');
 
-        const postData = (body, outputData, errorData) => {
-            const request = new XMLHttpRequest();
+        const postData = (body) => {
+            return new Promise((resolve, reject) => {
+                const request = new XMLHttpRequest();
 
-            request.addEventListener('readystatechange', () => {
-                if (request.readyState !== 4) {
-                    return;
-                }
-
-                if (request.status === 200) {
-                    outputData();
-                } else {
-                    errorData(request.status);
-                }
+                request.addEventListener('readystatechange', () => {
+                    if (request.readyState !== 4) {
+                        return;
+                    }
+    
+                    if (request.status === 200) {
+                        resolve();
+                    } else {
+                        reject(request.status);
+                    }
+                });
+                request.open('POST', './server.php');
+                request.setRequestHeader('Content-Type', 'application/json'); //'multipart/form-data'
+    
+                request.send(JSON.stringify(body));
             });
-            request.open('POST', './server.php');
-            request.setRequestHeader('Content-Type', 'application/json'); //'multipart/form-data'
-
-            request.send(JSON.stringify(body));
         };
 
         statusMessage.className = 'loaded';
@@ -698,20 +700,21 @@ window.addEventListener('DOMContentLoaded', () => {
         formData.forEach((value, key) => {
             body[key] = value;
         });
-        postData(body, () => {
-            statusMessage.textContent = successMessage;
-            loader.remove();
-            form.reset();
-            setTimeout(() => {
-                statusMessage.remove();
-            }, 2000);
-        }, error => {
-            statusMessage.textContent = errorMessage;
-            loader.remove();
-            console.error(error);
-            setTimeout(() => {
-                statusMessage.remove();
-            }, 2000);
+        postData(body)
+            .then(() => {
+                statusMessage.textContent = successMessage;
+                loader.remove();
+                form.reset();
+                setTimeout(() => {
+                    statusMessage.remove();
+                }, 2000);
+            }).catch(error => {
+                statusMessage.textContent = errorMessage;
+                loader.remove();
+                console.error(error);
+                setTimeout(() => {
+                    statusMessage.remove();
+                }, 2000);
         });
         // });
     };
