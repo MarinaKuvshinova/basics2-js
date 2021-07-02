@@ -29,16 +29,22 @@ const calc = (price = 100) => {
         if (typeValue && squareValue) {
             total = price * typeValue * squareValue * countValue * dayValue;
         }
+        
 
         const counted = () => {
-            if (countToTal === total) {
-                clearInterval(interval);
-            } else {
-                countToTal += 100;
+            if (countToTal < total) {
+                countToTal += 10;
                 totalValue.textContent = countToTal;
             }
+
+            if (countToTal === total) {
+                cancelAnimationFrame(interval);
+            }
+
+            interval = requestAnimationFrame(counted, 1);
         };
-        interval = setInterval(counted, 100);
+        
+        counted();
     };
 
     calcBlock.addEventListener('change', event => {
@@ -46,6 +52,7 @@ const calc = (price = 100) => {
 
         if (target.matches('select') || target.matches('input')) {
             countSum();
+            
         }
 
     });
