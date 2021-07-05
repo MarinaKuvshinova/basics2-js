@@ -12,10 +12,12 @@ const validate = () => {
                 case 'text':
                     e.target.value = e.target.value.replace(/[^а-яё -]/uig, '');
                     break;
+                case 'message':
+                    e.target.value = e.target.value.replace(/[^а-яё -.,!?:;'"]/uig, '');
+                    break;
                 case 'email':
                     e.target.value = e.target.value
-                        .replace(/[^a-z@\-_\.!\~\'*]+/ig, '')
-                        .replace(/[,\/#$%\^&;:{}=\`()\[\]]/g, '');
+                        .replace(/[а-яё*]/uig, '');
                     break;
                 case 'phone':
                     e.target.value = e.target.value.replace(/[^\d()-+]/ig, '');
@@ -41,7 +43,7 @@ const validate = () => {
     checkText(calcForm.querySelectorAll('input[type="text"]'), 'number');
 
     //check textarea contact form
-    checkText(contactForm.querySelectorAll('#form2-message'), 'text');
+    checkText(contactForm.querySelectorAll('#form2-message'), 'message');
 
     //check input text name from
     checkText(document.getElementsByName('user_name'), 'text');

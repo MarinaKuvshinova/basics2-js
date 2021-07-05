@@ -5,7 +5,7 @@ const togglePopup = () => {
 
 
     const animationShow = (left = 50) => {
-        left--;
+        left -= 2;
         let animationInterval;
         popupContent.style.margin = `0 0 0 -${left}vw`;
         cancelAnimationFrame(animationInterval);
@@ -17,7 +17,7 @@ const togglePopup = () => {
     };
 
     const animationHide = (left = 0) => {
-        left++;
+        left += 2;
         let animationInterval;
             popupContent.style.margin = `0 0 0 -${left}vw`;
         // cancelAnimationFrame(animationInterval); 
@@ -33,7 +33,7 @@ const togglePopup = () => {
             animationHide();
             setTimeout(() => {
                 popup.style.display = 'none';
-            }, 1000);
+            }, 500);
         } else {
             popup.style.display = 'none';
         }
@@ -45,7 +45,7 @@ const togglePopup = () => {
                 popupContent.style.margin = '0 0 0 -100vw';
                 setTimeout(() => {
                     animationShow();
-                }, 200);
+                }, 100);
             } else {
                 popupContent.style.margin = '0';
             }

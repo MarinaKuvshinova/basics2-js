@@ -31,7 +31,7 @@ const toggleMenu = () => {
             handlerMenu();
         }
 
-        if (menu.classList.contains('active-menu') && !target.closest('.menu') && !target.matches('menu')) {
+        if (menu.classList.contains('active-menu') && !target.closest('.menu') && !target.matches('menu') && !target.matches('li')) {
             handlerMenu();
         }
     });

@@ -13,7 +13,7 @@ import Validator from './modules/Validator';
 import sendForm from './modules/sendForm';
 
 //Timer
-countTimer('01 july 2021');
+countTimer('10 july 2021');
 
 //menu
 toggleMenu();
