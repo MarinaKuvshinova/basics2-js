@@ -11,6 +11,7 @@ import validate from './modules/validate';
 import calc from './modules/calc';
 import Validator from './modules/Validator';
 import sendForm from './modules/sendForm';
+import SliderCarousel from './modules/SliderCarousel';
 
 //Timer
 countTimer('10 july 2021');
@@ -121,3 +122,26 @@ valid3.init(sendForm);
 // sendForm('form1');
 // sendForm('form2');
 // sendForm('form3');
+
+const carousel = new SliderCarousel({
+    main: '.companies-wrapper',
+    wrap: '.companies-hor',
+    prev: '#test-left',
+    next: '#test-right',
+    slidesToShow: 4,
+    infinity: true,
+    responsive: [{
+        breakpoint: 1024,
+        slidesToShow: 3
+    },
+    {
+        breakpoint: 768,
+        slidesToShow: 2
+    },
+    {
+        breakpoint: 576,
+        slidesToShow: 1
+    }
+]
+});
+carousel.init();
